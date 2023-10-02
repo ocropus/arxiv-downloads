@@ -1,0 +1,97 @@
+to the sparsity of the features. This can be justified by the fact that hα is an approximant to the non-negative
+sparse coding map with sparsity penalty α (see Appendix A). Without imposing any restriction on the neurons’
+bias (e.g., negativity) in rectifier networks, the representation might however not be sparse. This potentially
+explains the necessity to use an additional `1 sparsifying regularizer on the activation values in Glorot et al
+(2011) to enforce the sparsity of the network, while sparsity is achieved implicitly in our scheme. Second,
+unlike the work of (Glorot et al, 2011) that employs a biological argument to introduce the rectifier function, we
+choose the soft-thresholding nonlinearity due to its strong relation to sparse coding. Our work therefore provides
+an independent motivation for considering the rectifier activation function, while the biological motivation in
+(Glorot et al, 2011) in turn gives us another motivation for considering soft-thresholding. Third, rectified linear
+units are very often used in the context of deep networks (Maas et al, 2013; Zeiler et al, 2013), and seldom
+used with only one hidden layer. In that sense, the classification scheme considered in this paper has a simpler
+description, and can be seen as a particular instance of the general neural network models.
+From an optimization perspective, our learning algorithm leverages the simplicity of our classification architecture and is very different from the generic techniques used to train neural networks. In particular, while
+neural networks are generally trained with stochastic gradient descent, we adopt an optimization based on the
+DC framework that directly exploits the structure of the learning problem.
+
+3
+
+Problem formulation
+
+We present below the learning problem, that estimates jointly the dictionary D ∈ Rn×N and linear classifier
+w ∈ RN in our fast classification scheme described in Section 1. We consider the binary classification task
+where X = [x1 | . . . |xm ] ∈ Rn×m and y = [y1 | . . . |ym ] ∈ {−1, 1}m denote respectively the set of training points
+and their associated labels. We consider the following supervised learning formulation
+argmin
+D,w
+
+m
+X
+
+L(yi wT hα (DT xi )) +
+
+i=1
+
+ν
+kwk22 ,
+2
+
+(3)
+
+where L denotes a convex loss function that penalizes incorrect classification of a training sample and ν is a
+regularization parameter that prevents overfitting. The soft-thresholding map hα has been defined in Eq. (1).
+Typical loss functions that can be used in Eq. (3) are the hinge loss (L(x) = max(0, 1 − x)), which we adopt
+in this paper, or its smooth approximation, the logistic loss (L(x) = log(1 + e−x )). The above optimization
+problem attempts to find a dictionary D and a linear separator w such that wT (DT xi − α)+ has the same sign
+as yi on the training set, which leads to correct classification. At the same time, it keeps kwk2 small in order
+to prevent overfitting. Note that to simplify the exposition, the bias term in the linear classifier is dropped.
+However, our study extends straightforwardly to include nonzero bias.
+The problem formulation in Eq. (3) is reminiscent of the popular support vector machine (SVM) training
+procedure, where only a linear classifier w is learned. Instead, we embed the nonlinearity directly in the
+problem formulation, and learn jointly the dictionary D and the linear classifier w. This significantly broadens
+the applicability of the learned classifier to important nonlinear classification tasks. Note however that adding
+a nonlinear mapping raises an important optimization challenge, as the learning problem is no more convex.
+When we look closer at the optimization problem in Eq. (3), we note that, for any α > 0, the objective
+function is equal to:
+m
+X
+
+L(yi αwT h1 (DT xi /α)) +
+
+i=1
+
+=
+
+m
+X
+
+L(yi w̃T h1 (D̃T xi )) +
+
+i=1
+
+ν
+kwk22
+2
+
+ν0
+kw̃k22 ,
+2
+
+where w̃ = αw, D̃ = D/α and ν 0 = ν/α2 . Therefore, without loss of generality, we set the sparsity parameter α
+to 1 in the rest of this paper. This is in contrast with traditional dictionary learning approaches based on `0 or
+`1 minimization problems, where a sparsity parameter needs to be set manually beforehand. Fixing α = 1 and
+unconstraining the norms of the dictionary atoms essentially permits to adapt the sparsity to the problem at
+hand. This represents an important advantage, as setting the sparsity parameter is in general a difficult task.
+A sample x is then assigned to class ‘+1’ if wT h1 (DT x) > 0, and class ‘−1’ otherwise.
+Finally, we note that, even if our focus primarily goes to the binary classification problem, the extension to
+multi-class can be easily done through a one-vs-all strategy, for instance.
+
+4
+
+Learning algorithm
+
+The problem in Eq. (3) is non-convex and difficult to solve in general. In this section, we propose to relax the
+original optimization problem and cast it as a difference-of-convex (DC) program. Leveraging this property,
+4
+
+

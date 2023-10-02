@@ -1,0 +1,5 @@
+pandas
+ray[default]
+ray[data]
+pdfminer3
+-e git+https://git@github.com/webdataset/webdataset.git#egg=webdataset
